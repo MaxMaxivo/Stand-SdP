@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Stand del SdP — Zambayonny</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -600,12 +601,94 @@ function renderRendicion(){
   });
 
   html+=`<div style="display:flex;gap:8px;margin-top:14px">
-    <button class="btn btn-primary btn-full" onclick="exportarRendicion()">Exportar y copiar</button>
+    <button class="btn btn-primary btn-full" onclick="exportarExcel()">⬇ Descargar Excel para Zamba</button>
   </div>`;
   el.innerHTML=html;
 }
 
 function guardarCom(id,val){coms[id]=val;sv(KC,coms);}
+
+function exportarExcel(){
+  const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
+  if(pend.length===0){toast('No hay shows pendientes');return;}
+
+  const wb=XLSX.utils.book_new();
+
+  // ── Hoja 1: Resumen ──
+  const resRows=[];
+
+  // Título
+  resRows.push(["RENDICIÓN — SINDICADO DEL PEDAZO",""]);
+  resRows.push(["Zambayonny · Stand Sindicado del Pedazo",""]);
+  resRows.push([""]);
+  resRows.push(["Período:", pend.map(s=>s.fecha||s.nombre).join(' / ')]);
+  resRows.push(["Fecha de rendición:", new Date().toLocaleDateString('es-AR')]);
+  resRows.push(["Rendido por:", "Max — SdP"]);
+  resRows.push([""]);
+
+  // Resumen global por beneficiario
+  resRows.push(["RESUMEN GLOBAL",""]);
+  resRows.push(["Beneficiario","Total Vendido","Monto"]);
+  const ventasPend=ventas.filter(v=>pend.map(s=>s.nombre).includes(v.show));
+  const porBenef={};
+  ventasPend.forEach(v=>{Object.entries(v.pct).forEach(([k,p])=>{porBenef[k]=(porBenef[k]||0)+v.total*(p/100);});});
+  const totalGral=ventasPend.reduce((s,v)=>s+v.total,0);
+  Object.entries(porBenef).forEach(([k,v])=>{resRows.push([k, totalGral, v]);});
+  resRows.push(["TOTAL","",totalGral]);
+  resRows.push([""]);
+
+  // Detalle por show
+  resRows.push(["DETALLE POR SHOW",""]);
+  pend.forEach(show=>{
+    const vs=ventas.filter(v=>v.show===show.nombre);
+    const totalShow=vs.reduce((s,v)=>s+v.total,0);
+    const snap=stockSnap[show.nombre]||{};
+    resRows.push([""]);
+    resRows.push([show.nombre, show.fecha||"", show.lugar||""]);
+    resRows.push(["Producto","Tipo","Precio","Stock Inicial","Vendido","Stock Actual","Total","Distribución"]);
+    const porProd={};
+    vs.forEach(v=>{if(!porProd[v.prodId])porProd[v.prodId]={nombre:v.nombre,tipo:v.tipo,precio:v.precio,qty:0,total:0,pct:v.pct,pid:v.prodId};porProd[v.prodId].qty+=v.qty;porProd[v.prodId].total+=v.total;});
+    Object.values(porProd).forEach(p=>{
+      const si=snap[p.pid]??'—';
+      const sa=prods.find(x=>x.id===p.pid)?.stock??'—';
+      const distStr=Object.entries(p.pct).map(([k,v])=>`${k}: $${Math.round(p.total*v/100).toLocaleString('es-AR')} (${v}%)`).join('  |  ');
+      resRows.push([p.nombre,p.tipo,p.precio,si,p.qty,sa,p.total,distStr]);
+    });
+    resRows.push(["","","","","","TOTAL SHOW","",totalShow]);
+    const com=coms[show.id]||'';
+    if(com)resRows.push(["Comentarios:",com]);
+  });
+
+  resRows.push([""]);
+  resRows.push(["","","","","","TOTAL GENERAL","",totalGral]);
+
+  const ws1=XLSX.utils.aoa_to_sheet(resRows);
+
+  // Anchos de columna
+  ws1['!cols']=[{wch:32},{wch:14},{wch:14},{wch:13},{wch:11},{wch:13},{wch:14},{wch:50}];
+
+  XLSX.utils.book_append_sheet(wb,ws1,"Rendición");
+
+  // ── Hoja 2: Ventas detalladas ──
+  const detRows=[["Show","Fecha","Lugar","Producto","Tipo","Precio unit.","Unidades","Total","Distribución"]];
+  pend.forEach(show=>{
+    const vs=ventas.filter(v=>v.show===show.nombre);
+    const porProd={};
+    vs.forEach(v=>{if(!porProd[v.prodId])porProd[v.prodId]={nombre:v.nombre,tipo:v.tipo,precio:v.precio,qty:0,total:0,pct:v.pct,pid:v.prodId};porProd[v.prodId].qty+=v.qty;porProd[v.prodId].total+=v.total;});
+    Object.values(porProd).forEach(p=>{
+      const dist=Object.entries(p.pct).map(([k,v])=>`${k} ${v}%`).join(' | ');
+      detRows.push([show.nombre,show.fecha||'',show.lugar||'',p.nombre,p.tipo,p.precio,p.qty,p.total,dist]);
+    });
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(detRows);
+  ws2['!cols']=[{wch:28},{wch:12},{wch:22},{wch:22},{wch:10},{wch:13},{wch:10},{wch:13},{wch:35}];
+  XLSX.utils.book_append_sheet(wb,ws2,"Detalle ventas");
+
+  // Descargar
+  const fecha=new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
+  XLSX.writeFile(wb,`Rendicion_SdP_${fecha}.xlsx`);
+  toast('Excel descargado ✓');
+}
 
 function exportarRendicion(){
   const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
