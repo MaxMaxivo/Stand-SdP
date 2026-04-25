@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Stand del SdP — Zambayonny</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0f0f;
+  --surface:#1a1a1a;
+  --surface2:#222;
+  --border:#2e2e2e;
+  --border2:#3a3a3a;
+  --text:#f0ede8;
+  --muted:#888;
+  --accent:#d4a843;
+  --accent-dim:#a07c28;
+  --accent-bg:rgba(212,168,67,0.10);
+  --red:#e05252;
+  --red-bg:rgba(224,82,82,0.10);
+  --green:#5cb85c;
+  --green-bg:rgba(92,184,92,0.10);
+  --blue:#5b9cf6;
+  --blue-bg:rgba(91,156,246,0.10);
+  --purple:#b07ef8;
+  --purple-bg:rgba(176,126,248,0.10);
+  --r:10px;
+  --r-sm:6px;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5}
+body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;min-height:100vh}
+
+/* HEADER */
+.header{padding:16px 16px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.logo{display:flex;flex-direction:column}
+.logo-title{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.logo-sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.show-pill{background:var(--accent-bg);border:1px solid var(--accent-dim);color:var(--accent);font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:20px;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.show-pill.empty{background:var(--surface2);border-color:var(--border2);color:var(--muted)}
+
+/* TAB BAR */
+.tabs{display:flex;gap:2px;padding:14px 16px 0;flex-shrink:0}
+.tab{flex:1;padding:9px 4px;font-size:12px;font-weight:500;font-family:var(--font);border:none;background:var(--surface2);color:var(--muted);border-radius:var(--r-sm);cursor:pointer;transition:all .2s;letter-spacing:0.2px}
+.tab.active{background:var(--accent);color:#000;font-weight:600}
+
+/* SCROLL AREA */
+.scroll{flex:1;overflow-y:auto;padding:14px 16px 80px;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* SECTION */
+.section-label{font-size:10px;font-family:var(--mono);color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;margin-top:18px}
+.section-label:first-child{margin-top:0}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.card-row{display:flex;justify-content:space-between;align-items:center}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;font-family:var(--mono);letter-spacing:0.05em}
+.b-cd{background:var(--blue-bg);color:var(--blue)}
+.b-libro{background:var(--green-bg);color:var(--green)}
+.b-remera{background:var(--accent-bg);color:var(--accent)}
+.b-otro{background:var(--purple-bg);color:var(--purple)}
+
+/* PRODUCT GRID */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.prod-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
+.prod-card:active{opacity:0.8}
+.prod-card.sel{border-color:var(--accent);background:var(--accent-bg)}
+.prod-name{font-size:13px;font-weight:600;margin:5px 0 3px;line-height:1.3}
+.prod-meta{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.prod-stock-low{color:var(--red)}
+
+/* SHOW CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{padding:5px 11px;border-radius:20px;font-size:11px;font-family:var(--mono);cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);transition:all .15s;white-space:nowrap}
+.chip:active{opacity:0.7}
+.chip.pasado{border-color:#5cb85c44;color:var(--green);background:var(--green-bg)}
+.chip.futuro{border-color:#5b9cf644;color:var(--blue);background:var(--blue-bg)}
+.chip.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);font-weight:500}
+
+/* VENTA PANEL */
+.venta-panel{background:var(--surface);border:1px solid var(--accent-dim);border-radius:var(--r);padding:14px;margin-top:4px}
+.qty-row{display:flex;align-items:center;gap:16px;margin:14px 0}
+.qty-btn{width:42px;height:42px;border:1px solid var(--border2);background:var(--surface2);border-radius:var(--r-sm);font-size:22px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.qty-btn:active{background:var(--border2)}
+.qty-num{font-size:28px;font-weight:600;font-family:var(--mono);min-width:40px;text-align:center;color:var(--accent)}
+.subtotal{font-size:13px;color:var(--muted);font-family:var(--mono)}
+
+/* BUTTONS */
+.btn{padding:10px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text);transition:all .15s}
+.btn:active{opacity:0.8;transform:scale(0.98)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#000}
+.btn-primary:disabled{background:var(--surface2);border-color:var(--border);color:var(--muted);cursor:not-allowed;transform:none}
+.btn-danger{color:var(--red);border-color:var(--red-bg)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-full{width:100%;padding:12px;font-size:14px}
+
+/* INPUTS */
+.input{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s}
+.input:focus{border-color:var(--accent)}
+.input::placeholder{color:var(--muted)}
+.select{width:100%;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2);color:var(--text);font-size:13px;font-family:var(--font);outline:none;-webkit-appearance:none}
+textarea.input{resize:vertical;min-height:70px;line-height:1.5}
+
+/* FORM */
+.form-label{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:5px}
+.form-row{margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* METRICS */
+.metric{background:var(--surface2);border-radius:var(--r-sm);padding:10px 12px;text-align:center}
+.metric-val{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--accent)}
+.metric-lbl{font-size:10px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+
+/* HIST ROW */
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.hist-row:last-child{border-bottom:none}
+.hist-muted{color:var(--muted);font-size:11px;font-family:var(--mono)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+.modal-sheet{background:var(--surface);border-radius:16px 16px 0 0;border-top:1px solid var(--border2);padding:20px 16px 32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px}
+
+/* TAGS */
+.tag{font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:3px;font-weight:500}
+.tag-pendiente{background:var(--accent-bg);color:var(--accent)}
+.tag-rendido{background:var(--green-bg);color:var(--green)}
+.tag-futuro{background:var(--blue-bg);color:var(--blue)}
+
+/* UPCOMING */
+.upcoming-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.upcoming-row:last-child{border-bottom:none}
+.date-box{background:var(--surface2);border-radius:var(--r-sm);padding:6px 10px;text-align:center;min-width:48px;flex-shrink:0}
+.date-day{font-size:19px;font-weight:700;font-family:var(--mono);line-height:1;color:var(--accent)}
+.date-mon{font-size:9px;color:var(--muted);text-transform:uppercase;font-family:var(--mono)}
+
+/* EMPTY */
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:28px 0;font-family:var(--mono)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--accent);color:#000;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--mono);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+
+/* POR SHOW */
+.show-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.show-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.show-block-name{font-size:14px;font-weight:600}
+.show-block-meta{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.prod-rend-block{padding:10px 0;border-bottom:1px solid var(--border)}
+.prod-rend-block:last-of-type{border-bottom:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-title">Stand del SdP</div>
+    <div class="logo-sub">Zambayonny · sindicado del pedazo</div>
+  </div>
+  <div class="show-pill empty" id="show-pill" onclick="showTab('shows')">sin show</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('vender')">Vender</button>
+  <button class="tab" onclick="showTab('stock')">Productos</button>
+  <button class="tab" onclick="showTab('shows')">Shows</button>
+  <button class="tab" onclick="showTab('rendir')">Rendición</button>
+</div>
+
+<div class="scroll" id="scroll-area">
+
+  <!-- VENDER -->
+  <div id="tab-vender">
+    <div class="section-label">Shows pasados sin rendir</div>
+    <div class="chips" id="chips-pasados"></div>
+    <div class="section-label">Próximos shows</div>
+    <div class="chips" id="chips-futuros"></div>
+    <input class="input" id="show-custom" placeholder="O escribí el nombre del show..." oninput="setCustomShow(this.value)" style="margin-bottom:14px"/>
+    <div class="section-label">Producto</div>
+    <div class="prod-grid" id="prod-grid"></div>
+    <div id="venta-panel" style="display:none">
+      <div class="venta-panel">
+        <div class="card-row">
+          <div>
+            <div id="vp-badge"></div>
+            <div style="font-size:16px;font-weight:600;margin-top:5px" id="vp-nombre"></div>
+            <div style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px" id="vp-info"></div>
+          </div>
+          <button class="btn btn-sm btn-danger" onclick="cancelVenta()">✕</button>
+        </div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="chQty(-1)">−</button>
+          <div class="qty-num" id="qty-num">1</div>
+          <button class="qty-btn" onclick="chQty(1)">+</button>
+          <span class="subtotal" id="subtotal"></span>
+        </div>
+        <button class="btn btn-primary btn-full" id="btn-confirm" onclick="confirmarVenta()">Registrar venta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOCK / PRODUCTOS -->
+  <div id="tab-stock" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-label" style="margin:0">Todos los productos</div>
+      <button class="btn btn-sm btn-primary" onclick="openProdModal(null)">+ Nuevo</button>
+    </div>
+    <div id="stock-list"></div>
+  </div>
+
+  <!-- SHOWS -->
+  <div id="tab-shows" style="display:none">
+    <div class="section-label">Pendientes de rendición</div>
+    <div id="shows-pendientes"></div>
+    <div class="section-label">Agregar show</div>
+    <div class="card">
+      <div class="grid2" style="margin-bottom:10px">
+        <div><div class="form-label">Fecha</div><input class="input" id="ns-fecha" placeholder="30/04/2026"/></div>
+        <div><div class="form-label">Lugar</div><input class="input" id="ns-lugar" placeholder="Alimme"/></div>
+      </div>
+      <div class="form-row"><div class="form-label">Nombre del show</div><input class="input" id="ns-nombre" placeholder="Noche Amarilla"/></div>
+      <div style="display:flex;gap:8px">
+        <select class="select" id="ns-tipo" style="flex:1">
+          <option value="pasado">Pasado (sin rendir)</option>
+          <option value="futuro">Próximo</option>
+        </select>
+        <button class="btn btn-primary" onclick="agregarShow()">Agregar</button>
+      </div>
+    </div>
+    <div class="section-label">Próximos — zambayonny.com</div>
+    <div class="card" id="shows-proximos"></div>
+    <div class="section-label">Ya rendidos</div>
+    <div id="shows-rendidos"></div>
+  </div>
+
+  <!-- RENDICION -->
+  <div id="tab-rendir" style="display:none">
+    <div id="rend-content"></div>
+  </div>
+
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="modal-prod" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('prod')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="modal-title" id="modal-prod-title">Nuevo producto</div>
+      <button class="btn btn-sm" onclick="closeModal('prod')">✕</button>
+    </div>
+    <div class="form-row"><div class="form-label">Nombre</div><input class="input" id="m-nombre" placeholder="CD Colección"/></div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><div class="form-label">Tipo</div>
+        <select class="select" id="m-tipo"><option value="CD">CD</option><option value="Libro">Libro</option><option value="Remera">Remera</option><option value="Otro">Otro</option></select>
+      </div>
+      <div><div class="form-label">Precio ($)</div><input class="input" id="m-precio" type="number" placeholder="15000"/></div>
+    </div>
+    <div class="form-row"><div class="form-label">Stock actual</div><input class="input" id="m-stock" type="number" placeholder="10"/></div>
+    <div style="margin-bottom:6px"><div class="form-label">Distribución (deben sumar 100%)</div></div>
+    <div id="pct-fields" style="margin-bottom:6px"></div>
+    <div id="pct-aviso" style="font-size:11px;color:var(--red);margin-bottom:8px;display:none;font-family:var(--mono)">⚠ Los % no suman 100</div>
+    <button class="btn btn-sm" onclick="addPct()" style="margin-bottom:12px;font-size:11px">+ Beneficiario</button>
+    <div class="form-row"><div class="form-label">Notas (opcional)</div><input class="input" id="m-notas" placeholder="Diseño propio, costo a mi cargo..."/></div>
+    <button class="btn btn-primary btn-full" onclick="guardarProducto()" style="margin-top:4px">Guardar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KP='sdp_prods_v4',KV='sdp_ventas_v4',KS='sdp_shows_v4',KC='sdp_coms_v4';
+
+const SHOWS_PROXIMOS_WEB=[
+  {id:'f1',dia:'30',mes:'abr',fecha:'30/04/2026',lugar:'Alimme — Colegiales',nombre:'Noche Amarilla'},
+  {id:'f2',dia:'7',mes:'may',fecha:'07/05/2026',lugar:'Alimme — Colegiales',nombre:'Noche Verde'},
+  {id:'f3',dia:'14',mes:'may',fecha:'14/05/2026',lugar:'Alimme — Colegiales',nombre:'Noche Blanca'},
+  {id:'f4',dia:'21',mes:'may',fecha:'21/05/2026',lugar:'Montevideo — S.U. Villa Dolores',nombre:'Concierto acústico Mvd'},
+  {id:'f5',dia:'22',mes:'may',fecha:'22/05/2026',lugar:'Punta del Este — Narakan',nombre:'Concierto acústico PdE'},
+  {id:'f6',dia:'23',mes:'may',fecha:'23/05/2026',lugar:'Colonia — Plaza Viera',nombre:'Concierto acústico Colonia'},
+];
+const PRODS_DEF=[
+  {id:'hdc',nombre:'CD — HDC',tipo:'CD',precio:10000,stock:123,pct:{Zambayonny:90,SdP:10},notas:''},
+  {id:'lal',nombre:'CD — LAL',tipo:'CD',precio:10000,stock:57,pct:{Zambayonny:90,SdP:10},notas:''},
+  {id:'ley',nombre:'Libro Leyenda',tipo:'Libro',precio:15000,stock:1,pct:{Zambayonny:20,SdP:10,Marea:70},notas:''},
+  {id:'sue',nombre:'Libro La Suerte',tipo:'Libro',precio:15000,stock:5,pct:{Zambayonny:10,SdP:10,Marea:80},notas:''},
+  {id:'rem_fr',nombre:'Remera Frases',tipo:'Remera',precio:25000,stock:4,pct:{Zambayonny:20,SdP:20,Costos:60},notas:'Diseño propio'},
+  {id:'rem_dr',nombre:'Remera Drépanos',tipo:'Remera',precio:25000,stock:6,pct:{Zambayonny:20,SdP:20,Costos:60},notas:''},
+  {id:'rem_bq',nombre:'Remera Barquito',tipo:'Remera',precio:25000,stock:4,pct:{Zambayonny:20,SdP:20,Costos:60},notas:''},
+  {id:'gorras',nombre:'Gorras',tipo:'Otro',precio:15000,stock:30,pct:{Zambayonny:33,SdP:33,Costos:34},notas:''},
+  {id:'mascaras',nombre:'Máscaras',tipo:'Otro',precio:10000,stock:3,pct:{Zambayonny:92,SdP:8},notas:''},
+];
+const SHOWS_DEF=[
+  {id:'s1',fecha:'14/02/2026',lugar:'La Tangente',nombre:'Show La Tangente — 14 feb',tipo:'pasado',rendido:false},
+  {id:'s2',fecha:'21/03/2026',lugar:'El Tasso — San Telmo',nombre:'Show El Tasso — 21 mar',tipo:'pasado',rendido:false},
+  {id:'s3',fecha:'16/04/2026',lugar:'Alimme — Colegiales',nombre:'Noche Roja — 16 abr',tipo:'pasado',rendido:false},
+  {id:'s4',fecha:'23/04/2026',lugar:'Alimme — Colegiales',nombre:'Noche Negra — 23 abr',tipo:'pasado',rendido:false},
+];
+
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let prods=ld(KP,PRODS_DEF);
+let ventas=ld(KV,[]);
+let misShows=ld(KS,SHOWS_DEF);
+let coms=ld(KC,{});
+let selectedProd=null,qty=1,showActivo='',editingProdId=null,pctKeys=['Zambayonny','SdP'];
+let stockSnap={};
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('es-AR')}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400)}
+
+function BC(tipo){return tipo==='CD'?'b-cd':tipo==='Libro'?'b-libro':tipo==='Remera'?'b-remera':'b-otro';}
+
+function setShowActivo(nombre){
+  showActivo=nombre;
+  const pill=document.getElementById('show-pill');
+  pill.textContent=nombre||'sin show';
+  pill.classList.toggle('empty',!nombre);
+  document.getElementById('show-custom').value='';
+  renderChips();
+}
+function setCustomShow(v){
+  showActivo=v;
+  const pill=document.getElementById('show-pill');
+  pill.textContent=v||'sin show';
+  pill.classList.toggle('empty',!v);
+  renderChips();
+}
+
+function renderChips(){
+  const cp=document.getElementById('chips-pasados');
+  const cf=document.getElementById('chips-futuros');
+  if(!cp||!cf)return;
+  const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
+  cp.innerHTML=pend.length?pend.map(s=>`<div class="chip pasado${showActivo===s.nombre?' sel':''}" onclick="setShowActivo('${s.nombre.replace(/'/g,"\\'")}')">${s.fecha?s.fecha.slice(0,5)+' ':''}<b>${s.nombre}</b></div>`).join(''):'<span style="font-size:11px;color:var(--muted);font-family:var(--mono)">—</span>';
+  cf.innerHTML=SHOWS_PROXIMOS_WEB.map(s=>`<div class="chip futuro${showActivo===s.nombre?' sel':''}" onclick="setShowActivo('${s.nombre.replace(/'/g,"\\'")}')">${s.dia}/${s.mes} ${s.nombre}</div>`).join('');
+}
+
+function renderProdGrid(){
+  const g=document.getElementById('prod-grid');if(!g)return;
+  g.innerHTML=prods.map(p=>`<div class="prod-card${selectedProd&&selectedProd.id===p.id?' sel':''}" onclick="selectProd('${p.id}')">
+    <span class="badge ${BC(p.tipo)}">${p.tipo}</span>
+    <div class="prod-name">${p.nombre}</div>
+    <div class="prod-meta${p.stock<=2?' prod-stock-low':''}">${fmt(p.precio)} · ${p.stock} uds</div>
+  </div>`).join('');
+}
+
+function selectProd(id){
+  selectedProd=prods.find(p=>p.id===id);qty=1;
+  renderProdGrid();
+  const panel=document.getElementById('venta-panel');
+  if(!selectedProd){panel.style.display='none';return;}
+  panel.style.display='block';
+  document.getElementById('vp-badge').innerHTML=`<span class="badge ${BC(selectedProd.tipo)}">${selectedProd.tipo}</span>`;
+  document.getElementById('vp-nombre').textContent=selectedProd.nombre;
+  updateVentaUI();
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function cancelVenta(){selectedProd=null;document.getElementById('venta-panel').style.display='none';renderProdGrid();}
+function chQty(d){qty=Math.max(1,Math.min(qty+d,selectedProd?selectedProd.stock:1));updateVentaUI();}
+function updateVentaUI(){
+  if(!selectedProd)return;
+  document.getElementById('qty-num').textContent=qty;
+  document.getElementById('vp-info').textContent=`Stock disponible: ${selectedProd.stock}`;
+  document.getElementById('subtotal').textContent=fmt(qty*selectedProd.precio);
+  document.getElementById('btn-confirm').disabled=qty<1||selectedProd.stock<1;
+}
+
+function confirmarVenta(){
+  if(!selectedProd||qty<1)return;
+  const show=showActivo||'Show sin nombre';
+  if(!stockSnap[show]){
+    stockSnap[show]={};
+    prods.forEach(p=>{stockSnap[show][p.id]=p.stock+ventas.filter(v=>v.show===show&&v.prodId===p.id).reduce((s,v)=>s+v.qty,0);});
+  }
+  selectedProd.stock-=qty;
+  ventas.push({id:uid(),show,prodId:selectedProd.id,nombre:selectedProd.nombre,tipo:selectedProd.tipo,qty,precio:selectedProd.precio,total:qty*selectedProd.precio,pct:{...selectedProd.pct},ts:Date.now()});
+  sv(KP,prods);sv(KV,ventas);
+  // auto-crear show si es nuevo
+  if(!misShows.find(s=>s.nombre===show)){
+    misShows.push({id:uid(),fecha:'',lugar:'',nombre:show,tipo:'pasado',rendido:false});
+    sv(KS,misShows);
+  }
+  toast(qty+'× '+selectedProd.nombre+' registrado ✓');
+  selectedProd=null;qty=1;
+  document.getElementById('venta-panel').style.display='none';
+  renderProdGrid();
+}
+
+function renderStockList(){
+  const el=document.getElementById('stock-list');if(!el)return;
+  el.innerHTML=prods.map(p=>`<div class="card" style="margin-bottom:8px">
+    <div class="card-row">
+      <div style="flex:1">
+        <div style="display:flex;gap:7px;align-items:center;margin-bottom:5px">
+          <span class="badge ${BC(p.tipo)}">${p.tipo}</span>
+          <span style="font-size:14px;font-weight:600">${p.nombre}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">${fmt(p.precio)} · stock: ${p.stock}</div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px">${Object.entries(p.pct).map(([k,v])=>k+' '+v+'%').join(' · ')}</div>
+        ${p.notas?`<div style="font-size:11px;color:var(--muted);margin-top:3px;font-style:italic">${p.notas}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;margin-left:10px">
+        <button class="btn btn-sm" onclick="openProdModal('${p.id}')">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="borrarProd('${p.id}')">✕</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+function borrarProd(id){if(!confirm('¿Eliminar producto?'))return;prods=prods.filter(p=>p.id!==id);sv(KP,prods);renderStockList();renderProdGrid();toast('Eliminado');}
+
+function renderShowsTab(){
+  const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
+  const rend=misShows.filter(s=>s.tipo==='pasado'&&s.rendido);
+  const elP=document.getElementById('shows-pendientes');
+  elP.innerHTML=pend.length?pend.map(s=>{
+    const nv=ventas.filter(v=>v.show===s.nombre).reduce((a,v)=>a+v.qty,0);
+    const tv=ventas.filter(v=>v.show===s.nombre).reduce((a,v)=>a+v.total,0);
+    return `<div class="card" style="margin-bottom:8px">
+      <div class="card-row">
+        <div>
+          <div style="font-size:14px;font-weight:600">${s.nombre}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px">${[s.fecha,s.lugar].filter(Boolean).join(' · ')}</div>
+          <div style="font-size:11px;color:var(--accent);font-family:var(--mono);margin-top:3px">${nv} uds · ${fmt(tv)}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-sm" onclick="marcarRendido('${s.id}')" style="color:var(--green);border-color:#5cb85c44">✓ Rendir</button>
+          <button class="btn btn-sm btn-danger" onclick="borrarShow('${s.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty">No hay shows pendientes</div>';
+
+  const fp=document.getElementById('shows-proximos');
+  fp.innerHTML=SHOWS_PROXIMOS_WEB.map(s=>`<div class="upcoming-row">
+    <div class="date-box"><div class="date-day">${s.dia}</div><div class="date-mon">${s.mes}</div></div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">${s.nombre}</div><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px">${s.lugar}</div></div>
+    <span class="tag tag-futuro">próximo</span>
+  </div>`).join('');
+
+  const elR=document.getElementById('shows-rendidos');
+  elR.innerHTML=rend.length?rend.map(s=>`<div class="card" style="margin-bottom:8px;opacity:0.5">
+    <div class="card-row">
+      <div style="font-size:13px">${s.nombre} <span class="tag tag-rendido">rendido</span></div>
+      <button class="btn btn-sm btn-danger" onclick="borrarShow('${s.id}')">✕</button>
+    </div>
+  </div>`).join(''):'<div class="empty">—</div>';
+}
+
+function marcarRendido(id){
+  const s=misShows.find(x=>x.id===id);if(!s)return;
+  if(!confirm('¿Marcar "'+s.nombre+'" como rendido?'))return;
+  s.rendido=true;sv(KS,misShows);renderShowsTab();renderChips();toast('Marcado como rendido ✓');
+}
+function borrarShow(id){if(!confirm('¿Eliminar este show?'))return;misShows=misShows.filter(s=>s.id!==id);sv(KS,misShows);renderShowsTab();renderChips();}
+function agregarShow(){
+  const fecha=document.getElementById('ns-fecha').value.trim();
+  const lugar=document.getElementById('ns-lugar').value.trim();
+  const nombre=document.getElementById('ns-nombre').value.trim();
+  const tipo=document.getElementById('ns-tipo').value;
+  if(!nombre){toast('Escribí el nombre del show');return;}
+  misShows.push({id:uid(),fecha,lugar,nombre,tipo,rendido:false});
+  sv(KS,misShows);
+  ['ns-fecha','ns-lugar','ns-nombre'].forEach(id=>document.getElementById(id).value='');
+  renderShowsTab();renderChips();toast('Show agregado');
+}
+
+function openProdModal(id){
+  editingProdId=id;
+  const p=id?prods.find(x=>x.id===id):null;
+  document.getElementById('modal-prod-title').textContent=p?'Editar producto':'Nuevo producto';
+  document.getElementById('m-nombre').value=p?p.nombre:'';
+  document.getElementById('m-tipo').value=p?p.tipo:'CD';
+  document.getElementById('m-precio').value=p?p.precio:'';
+  document.getElementById('m-stock').value=p?p.stock:'';
+  document.getElementById('m-notas').value=p?p.notas:'';
+  pctKeys=p?Object.keys(p.pct):['Zambayonny','SdP'];
+  renderPctFields(p?p.pct:{});
+  document.getElementById('modal-prod').style.display='flex';
+}
+function closeModal(type){document.getElementById('modal-'+type).style.display='none';}
+
+function renderPctFields(vals={}){
+  const el=document.getElementById('pct-fields');
+  el.innerHTML=pctKeys.map((k,i)=>`<div style="display:flex;gap:6px;align-items:center;margin-bottom:7px">
+    <input class="input" value="${k}" onchange="pctKeys[${i}]=this.value" style="flex:1;font-size:12px;font-family:var(--mono)"/>
+    <input class="input" type="number" id="pv${i}" value="${vals[k]||''}" style="width:64px;font-size:12px;font-family:var(--mono)" oninput="checkPct()"/>
+    <span style="font-size:11px;color:var(--muted);font-family:var(--mono)">%</span>
+  </div>`).join('');
+}
+function addPct(){pctKeys.push('');const vals={};pctKeys.forEach((_,i)=>{const el=document.getElementById('pv'+i);if(el)vals[pctKeys[i]]=parseFloat(el.value)||0;});renderPctFields(vals);}
+function checkPct(){
+  const sum=pctKeys.reduce((s,_,i)=>s+(parseFloat(document.getElementById('pv'+i)?.value)||0),0);
+  document.getElementById('pct-aviso').style.display=Math.round(sum)!==100?'block':'none';
+}
+function guardarProducto(){
+  const nombre=document.getElementById('m-nombre').value.trim();
+  const tipo=document.getElementById('m-tipo').value;
+  const precio=parseFloat(document.getElementById('m-precio').value);
+  const stock=parseInt(document.getElementById('m-stock').value);
+  const notas=document.getElementById('m-notas').value.trim();
+  if(!nombre||isNaN(precio)||isNaN(stock)){toast('Completá todos los campos');return;}
+  const pct={};let sum=0;
+  pctKeys.forEach((k,i)=>{const v=parseFloat(document.getElementById('pv'+i)?.value||0);if(k.trim()){pct[k.trim()]=v;sum+=v;}});
+  if(Math.round(sum)!==100){toast('Los % deben sumar 100');return;}
+  if(editingProdId){
+    const idx=prods.findIndex(p=>p.id===editingProdId);
+    prods[idx]={...prods[idx],nombre,tipo,precio,stock,pct,notas};
+  }else{
+    prods.push({id:uid(),nombre,tipo,precio,stock,pct,notas});
+  }
+  sv(KP,prods);closeModal('prod');renderStockList();renderProdGrid();
+  toast(editingProdId?'Producto actualizado ✓':'Producto creado ✓');
+}
+
+function renderRendicion(){
+  const el=document.getElementById('rend-content');if(!el)return;
+  const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
+  if(pend.length===0){el.innerHTML='<div class="empty">No hay shows pendientes de rendición.</div>';return;}
+  const ventasPend=ventas.filter(v=>pend.map(s=>s.nombre).includes(v.show));
+  const totalGral=ventasPend.reduce((s,v)=>s+v.total,0);
+  const udsGral=ventasPend.reduce((s,v)=>s+v.qty,0);
+  const porBenef={};
+  ventasPend.forEach(v=>{Object.entries(v.pct).forEach(([k,p])=>{porBenef[k]=(porBenef[k]||0)+v.total*(p/100);});});
+
+  let html=`<div class="section-label">Resumen global</div>
+  <div class="grid3" style="margin-bottom:14px">
+    <div class="metric"><div class="metric-val">${fmt(totalGral)}</div><div class="metric-lbl">total</div></div>
+    <div class="metric"><div class="metric-val">${udsGral}</div><div class="metric-lbl">unidades</div></div>
+    <div class="metric"><div class="metric-val">${pend.length}</div><div class="metric-lbl">shows</div></div>
+  </div>`;
+
+  if(Object.keys(porBenef).length){
+    html+=`<div class="card" style="margin-bottom:14px">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Distribución total</div>`;
+    Object.entries(porBenef).forEach(([k,v])=>{html+=`<div class="hist-row"><span>${k}</span><span style="font-family:var(--mono);font-weight:600;color:var(--accent)">${fmt(v)}</span></div>`;});
+    html+=`<div class="hist-row" style="font-weight:700"><span>Total</span><span style="font-family:var(--mono);color:var(--accent)">${fmt(totalGral)}</span></div></div>`;
+  }
+
+  html+=`<div class="section-label">Detalle por show</div>`;
+  pend.forEach(show=>{
+    const vs=ventas.filter(v=>v.show===show.nombre);
+    const totalShow=vs.reduce((s,v)=>s+v.total,0);
+    const snap=stockSnap[show.nombre]||{};
+    html+=`<div class="show-block">
+      <div class="show-block-head">
+        <div>
+          <div class="show-block-name">${show.nombre}</div>
+          <div class="show-block-meta">${[show.fecha,show.lugar].filter(Boolean).join(' · ')}</div>
+        </div>
+        <span style="font-family:var(--mono);font-weight:600;color:var(--accent);font-size:14px">${fmt(totalShow)}</span>
+      </div>`;
+    if(vs.length===0){html+=`<div class="empty" style="padding:8px 0">Sin ventas registradas.</div>`;}
+    else{
+      const porProd={};
+      vs.forEach(v=>{if(!porProd[v.prodId])porProd[v.prodId]={nombre:v.nombre,tipo:v.tipo,precio:v.precio,qty:0,total:0,pct:v.pct,pid:v.prodId};porProd[v.prodId].qty+=v.qty;porProd[v.prodId].total+=v.total;});
+      Object.values(porProd).forEach(p=>{
+        const si=snap[p.pid]??'—';
+        const sa=prods.find(x=>x.id===p.pid)?.stock??'—';
+        html+=`<div class="prod-rend-block">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+            <span style="font-size:13px;font-weight:600">${p.nombre}</span>
+            <span class="badge ${BC(p.tipo)}">${p.tipo}</span>
+          </div>
+          <div class="grid3" style="gap:6px;margin-bottom:8px">
+            <div class="metric" style="padding:7px"><div class="metric-val" style="font-size:16px">${si}</div><div class="metric-lbl">ini.</div></div>
+            <div class="metric" style="padding:7px"><div class="metric-val" style="font-size:16px">${p.qty}</div><div class="metric-lbl">vendido</div></div>
+            <div class="metric" style="padding:7px"><div class="metric-val" style="font-size:16px">${sa}</div><div class="metric-lbl">actual</div></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:4px">${fmt(p.precio)} c/u · total: ${fmt(p.total)}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">${Object.entries(p.pct).map(([k,v])=>`${k}: ${fmt(p.total*v/100)} (${v}%)`).join('  ·  ')}</div>
+        </div>`;
+      });
+      const sb={};vs.forEach(v=>{Object.entries(v.pct).forEach(([k,p])=>{sb[k]=(sb[k]||0)+v.total*(p/100);});});
+      html+=`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;font-family:var(--mono);color:var(--muted);margin-bottom:6px;text-transform:uppercase">Distribución del show</div>
+        ${Object.entries(sb).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;font-family:var(--mono);padding:2px 0"><span style="color:var(--muted)">${k}</span><span>${fmt(v)}</span></div>`).join('')}
+      </div>`;
+    }
+    const comVal=coms[show.id]||'';
+    html+=`<div style="margin-top:12px">
+      <div style="font-size:10px;font-family:var(--mono);color:var(--muted);margin-bottom:5px;text-transform:uppercase">Comentarios</div>
+      <textarea class="input" rows="2" style="font-size:12px" placeholder="Notas para la rendición..." oninput="guardarCom('${show.id}',this.value)">${comVal}</textarea>
+    </div>`;
+    html+=`</div>`;
+  });
+
+  html+=`<div style="display:flex;gap:8px;margin-top:14px">
+    <button class="btn btn-primary btn-full" onclick="exportarRendicion()">Exportar y copiar</button>
+  </div>`;
+  el.innerHTML=html;
+}
+
+function guardarCom(id,val){coms[id]=val;sv(KC,coms);}
+
+function exportarRendicion(){
+  const pend=misShows.filter(s=>s.tipo==='pasado'&&!s.rendido);
+  let txt='RENDICIÓN — SINDICADO DEL PEDAZO\n';
+  txt+='Zambayonny · Shows pendientes\n';
+  txt+='Generado: '+new Date().toLocaleDateString('es-AR')+'\n';
+  txt+='═'.repeat(44)+'\n\n';
+  pend.forEach(show=>{
+    const vs=ventas.filter(v=>v.show===show.nombre);
+    const totalShow=vs.reduce((s,v)=>s+v.total,0);
+    const snap=stockSnap[show.nombre]||{};
+    txt+=`SHOW: ${show.nombre}\n`;
+    if(show.fecha||show.lugar)txt+=`${[show.fecha,show.lugar].filter(Boolean).join(' · ')}\n`;
+    txt+='─'.repeat(44)+'\n';
+    if(vs.length===0){txt+='Sin ventas registradas.\n';}
+    else{
+      const porProd={};
+      vs.forEach(v=>{if(!porProd[v.prodId])porProd[v.prodId]={nombre:v.nombre,qty:0,total:0,precio:v.precio,pct:v.pct,pid:v.prodId};porProd[v.prodId].qty+=v.qty;porProd[v.prodId].total+=v.total;});
+      Object.values(porProd).forEach(p=>{
+        const si=snap[p.pid]??'?';
+        const sa=prods.find(x=>x.id===p.pid)?.stock??'?';
+        txt+=`\n${p.nombre}\n`;
+        txt+=`  Stock inicial : ${si}\n`;
+        txt+=`  Vendido       : ${p.qty} unidades\n`;
+        txt+=`  Stock actual  : ${sa}\n`;
+        txt+=`  Precio        : ${fmt(p.precio)}\n`;
+        txt+=`  Total vendido : ${fmt(p.total)}\n`;
+        Object.entries(p.pct).forEach(([k,v])=>{txt+=`  ${(k+' ').padEnd(14)}: ${fmt(p.total*v/100)} (${v}%)\n`;});
+      });
+      const sb={};vs.forEach(v=>{Object.entries(v.pct).forEach(([k,p])=>{sb[k]=(sb[k]||0)+v.total*(p/100);});});
+      txt+=`\nRESUMEN DEL SHOW:\n`;
+      Object.entries(sb).forEach(([k,v])=>{txt+=`  ${(k+' ').padEnd(14)}: ${fmt(v)}\n`;});
+      txt+=`  ${'Total'.padEnd(14)}: ${fmt(totalShow)}\n`;
+    }
+    const com=coms[show.id]||'';
+    if(com)txt+=`\nComentarios:\n  ${com}\n`;
+    txt+='\n';
+  });
+  const tg=ventas.filter(v=>pend.map(s=>s.nombre).includes(v.show)).reduce((s,v)=>s+v.total,0);
+  txt+=`${'═'.repeat(44)}\nTOTAL GENERAL: ${fmt(tg)}\n`;
+  navigator.clipboard.writeText(txt)
+    .then(()=>toast('Rendición copiada al portapapeles ✓'))
+    .catch(()=>toast('No se pudo copiar automáticamente'));
+}
+
+function showTab(t){
+  ['vender','stock','shows','rendir'].forEach(x=>{document.getElementById('tab-'+x).style.display=x===t?'block':'none';});
+  document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['vender','stock','shows','rendir'][i]===t);});
+  document.getElementById('scroll-area').scrollTop=0;
+  if(t==='stock')renderStockList();
+  if(t==='shows')renderShowsTab();
+  if(t==='rendir')renderRendicion();
+  if(t==='vender'){renderChips();renderProdGrid();}
+}
+
+// init
+renderChips();
+renderProdGrid();
+</script>
+</body>
+</html>
